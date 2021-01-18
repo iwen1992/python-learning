@@ -9,7 +9,7 @@ class addFunc():
         self.name=name
         self.score=0
     #双下划綫__私有方法不可在外部调用    
-    def __making(self,score):
+    def making(self,score):
         if score < 0:
             self.score = 0
             
