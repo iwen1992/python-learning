@@ -1,0 +1,6 @@
+豆瓣图书
+https://api.douban.com/v2/book
+鱼书 isbn搜索
+http:/t.yushu.im/v2/book/isbn/(isbn)
+鱼书 模糊搜索
+http:/t.yushu.im/v2/book/search?q={}&start={}&count={}
