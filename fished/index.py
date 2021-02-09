@@ -1,12 +1,8 @@
 from flask import Flask
-app = Flask(__name__)
-app.config.from_object("config")
-@app.route("/book/search")
-def search(q,page):
-    isbn_or_key = "key"
-    if len(q) == 13 and q.isdigit():
-        isbn_or_key="isbn"
-    short_q = q.replace("-","");
-    if "-" in q and len(short_q) and short_q.isdigit:#多个and条件，把最可能为假的放在前面
-        isbn_or_key='isbn'
-    pass
+from app import create_app
+app = create_app()
+def index():
+    return "this is indexPage"
+if __name__ == '__main__':
+    app.run(host="127.0.0.1",debug=app.config['DEBUG'])
+
