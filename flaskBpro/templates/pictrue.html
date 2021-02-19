@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>this is pictruePage{{name}}</p>
+    <ul>
+    {% for item in lst %}
+        <li>{{item}}</li>
+    {% endfor %}
+    </ul>
+    <form action="/login" method="post">
+        <div>
+            <label>
+                用户名
+            </label>
+            <input type="text" name="username" placeholder="请输入用户名"/>
+        </div>
+        <div>
+            <label>
+                密码
+            </label>
+            <input type="password" name="pwd" placeholder="请输入密码"/>
+        </div>
+        <div>
+            <button type="submit">提交</button>
+        </div>
+
+    </form>
+</body>
+</html>
