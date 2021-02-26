@@ -62,6 +62,20 @@ def updata_details():
 def updata_history():
     cursor = None
     conn = None
-    conn,cursor = get_conn()
+    try:
+        conn,cursor = get_conn()
+        his = getDetail()[1]
+        sql = "insert into history values(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        print("更新历史记录")
+        for k,v in his.items():
+            print(k,v)
+            cursor.execute(sql,[k,v.get("confirm"),v.get("confirm_add"),v.get("suspect"),v.get("suspect_add"),v.get("heal"),v.get("heal_add"),v.get("dead"),v.get("dead_add")])
+            conn.commit()
+        print("完成历史记录更新")
+    except:
+        traceback.print_exc()
+    finally:
+        close_conn(conn,cursor)
 updata_details()
+updata_history()
 
