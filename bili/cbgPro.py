@@ -6,12 +6,13 @@ import traceback
 options = webdriver.ChromeOptions()
 options.add_argument('Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36')
 # options.add_argument('--proxy-server=http://ip:port')
-options.add_argument("--headless")
+#options.add_argument("--headless")
 driver = webdriver.Chrome("G:\python\python-learning\chromedriver_win32\chromedriver.exe",chrome_options=options)
 counter = int(1)
 resArr = []
 cbgArr = []
 telArr = []
+times = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 def get_conn():
     conn = pymysql.connect(host="localhost",user="root",password="Wg83saSaGcHHezfK",db="cbg",charset="utf8")
     cursor = conn.cursor()
@@ -27,30 +28,29 @@ def getItemVal(values):
     for i in values:
         cbgItem={'url':'','genyue':'','price':'','score':'','hongchen':''}
         url = i
-        time.sleep(2)
+        driver.implicitly_wait(5)
         driver.get(url)
         genyue = driver.find_elements_by_xpath('/html/body/section[1]/section[1]/div[2]/div[1]/div/div/div[2]/section/div[4]/ul/li[7]/span[2]')
         price = driver.find_elements_by_xpath('/html/body/section[1]/section[1]/div[2]/dl/div[6]/dd/span/span')
         score = driver.find_elements_by_xpath('/html/body/section[1]/section[1]/div[2]/div[1]/div/div/div[2]/section/div[1]/div/ul/li[4]/span[2]')
         hongchen = driver.find_elements_by_xpath('/html/body/section[1]/section[1]/div[2]/div[1]/div/div/div[2]/section/div[4]/ul/li[8]/span[2]')
         for genyueI in genyue:
-            cbgItem['genyue']= genyueI.text
+            cbgItem['genyue']= int(genyueI.text)
         for priceI in price:
-            cbgItem['price'] = priceI.text
+            cbgItem['price'] = int(float(re.compile(r'(?<=￥)\d+\.?\d*').findall(priceI.text)[0]))
         for scoreI in score:
-            cbgItem['score'] = scoreI.text
+            cbgItem['score'] = int(scoreI.text)
         for hongchenI in hongchen:
-            cbgItem['hongchen'] = hongchenI.text
+            cbgItem['hongchen'] = int(hongchenI.text)
         cbgItem['url']=url
         if(cbgItem['price'] and cbgItem['genyue']):
-            strP = cbgItem['price']
-            strN = float(re.compile(r'(?<=￥)\d+\.?\d*').findall(strP)[0])
-            if(int(strN)<2000 and int(cbgItem['genyue'])>10000):
+
+            if(cbgItem['price']<2000 and cbgItem['genyue']>10000):
                 telArr.append(cbgItem)
                 try:
                     conn, cursor = get_conn()
-                    sql = "insert into cbg_good(genyue,price,score,hongcheng,url) values(%s,%s,%s,%s,%s)"
-                    cursor.execute(sql, [cbgItem['genyue'],cbgItem['price'],cbgItem['score'],cbgItem['hongchen'],cbgItem['url']])
+                    sql = "insert into cbg_good(genyue,price,score,hongcheng,url,thetime) values(%s,%s,%s,%s,%s,%s)"
+                    cursor.execute(sql, [cbgItem['genyue'],cbgItem['price'],cbgItem['score'],cbgItem['hongchen'],cbgItem['url'],times])
                     conn.commit()
                 except:
                     traceback.print_exc()
@@ -59,8 +59,8 @@ def getItemVal(values):
 
         try:
             conn, cursor = get_conn()
-            sql = "insert into cbg_all(genyue,price,score,hongcheng,url) values(%s,%s,%s,%s,%s)"
-            cursor.execute(sql, [cbgItem['genyue'], cbgItem['price'], cbgItem['score'], cbgItem['hongchen'],cbgItem['url']])
+            sql = "insert into cbg_all(genyue,price,score,hongcheng,url,thetime) values(%s,%s,%s,%s,%s,%s)"
+            cursor.execute(sql, [cbgItem['genyue'], cbgItem['price'], cbgItem['score'], cbgItem['hongchen'],cbgItem['url'],times])
             conn.commit()
         except:
             traceback.print_exc()
@@ -70,7 +70,7 @@ def getItemVal(values):
 while counter <= 528:
     urlArr = []
     url = 'https://n.cbg.163.com/cbg/query.py?page='+str(counter)+'&act=search_role'
-    time.sleep(2)
+    driver.implicitly_wait(5)
     driver.get(url)
     xpath = '/html/body/div[3]/section[2]/table/tbody/tr/td[10]/a'
     pageResult = driver.find_elements_by_xpath(xpath)
